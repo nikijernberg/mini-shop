@@ -2,32 +2,40 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [ready, setReady] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("loggedIn") === "true";
-    if (!loggedIn) {
-      router.replace("/login");
-      return;
-    }
-    setReady(true);
+    const run = async () => {
+      const { data } = await supabase.auth.getSession();
+      const session = data.session;
+
+      if (!session) {
+        router.replace("/login");
+        return;
+      }
+
+      setEmail(session.user.email ?? null);
+    };
+
+    run();
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("loggedIn");
+  const logout = async () => {
+    await supabase.auth.signOut();
     router.replace("/login");
   };
 
-  if (!ready) return null;
+  if (!email) return null;
 
   return (
     <main style={{ padding: 24 }}>
       <h1>Dashboard</h1>
-      <p>Du är “inloggad” (mock).</p>
-      <button onClick={handleLogout}>Logga ut</button>
+      <p>Inloggad som: {email}</p>
+      <button onClick={logout}>Logga ut</button>
     </main>
   );
 }
