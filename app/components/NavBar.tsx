@@ -16,6 +16,7 @@ export default function NavBar() {
         <Link href="/">Home</Link>
         <Link href="/dashboard">Dashboard</Link>
         <Link href="/login">Login</Link>
+        <Link href="/products">Products</Link>
         <span style={{ marginLeft: "auto", opacity: 0.8 }}>
           Status: {loggedIn ? "Inloggad" : "Utloggad"}
         </span>
